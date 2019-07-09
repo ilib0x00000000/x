@@ -17,8 +17,6 @@ var (
 // Proxy 远程代理隧道服务
 type Proxy struct {
 	Dial func(address string) (net.Conn, error)
-
-	serverName string // 目标主机
 }
 
 func (p *Proxy) ServeHTTP(w http.ResponseWriter, req *http.Request) {

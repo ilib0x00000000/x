@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	localProxy "github.com/ilib0x00000000/x/local"
 	remoteProxy "github.com/ilib0x00000000/x/remote"
 	"github.com/mholt/certmagic"
 )
@@ -70,17 +71,26 @@ func startRemote() {
 
 // startLocal 本地代理启动入口
 // 本地代理需要指定监听的地址和端口
-// 启动方式 go run main.go --local --listen=:8800 --tls=true
+// 启动方式 go run main.go --local --listen=:8800 --domain=www.your-domain.com --tls=true
 func startLocal() {
+	if listen == "" || domain == "" {
+		usage()
+		return
+	}
 
+	handler := localProxy.NewClientProxy(domain, useTLS)
+	err := http.ListenAndServe(listen, handler)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // usage 启动代理方式
 func usage() {
 	fmt.Println("Usage: ")
 	fmt.Println("\t in local")
-	fmt.Println("\t\t go run main.go --local --listem=:8080 --tls=true")
-	fmt.Println("\t\t set env http_proxy=http://127.0.0.1:8080 https_proxy=https://127.0.0.1:8080")
+	fmt.Println("\t\t go run main.go --local --listem=:8080 --domain=www.your-domain.com --tls=true")
+	fmt.Println("\t\t set env http_proxy=127.0.0.1:8080 https_proxy=127.0.0.1:8080")
 	fmt.Println("\t\t Then will make you feel happy cross The Great Fire Wall (゜-゜)つロ~")
 	fmt.Println("\n")
 	fmt.Println("\t in remote")
