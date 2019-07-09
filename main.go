@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 
 	remoteProxy "github.com/ilib0x00000000/x/remote"
@@ -49,7 +50,7 @@ func main() {
 // 默认开启 TLS
 // 启动方式 go run main.go --remote --domain=xxxx --tls=true
 func startRemote() {
-	handle := remoteProxy.NewRemoteProxy()
+	handler := remoteProxy.NewRemoteProxy()
 
 	if useTLS {
 		certmagic.Default.Email = "ilib0x00000001@gmail.com"
