@@ -3,18 +3,16 @@ package util
 import (
 	"log"
 	"time"
-
-	"github.com/derekparker/trie"
 )
 
 // BlackList 黑名单[字典树]
 type BlackList struct {
-	list *trie.Trie // GFW 名单上的列表
-	temp *trie.Trie // 不在 GFW 名单上，但是直接访问不了的会加入
+	list *Trie // GFW 名单上的列表
+	temp *Trie // 不在 GFW 名单上，但是直接访问不了的会加入
 }
 
-// loadGFWList 加载 GFW 名单上数据
-func (s *BlackList) loadGFWList() {
+// LoadGFWList 加载 GFW 名单上数据
+func (s *BlackList) LoadGFWList() {
 	domains, err := fetchBlockedDomains()
 	if err != nil {
 		log.Println("load gfw list faild: ", err)
@@ -64,7 +62,7 @@ func strrev(s string) string {
 // NewBlackList 返回黑名单句柄
 func NewBlackList() *BlackList {
 	return &BlackList{
-		list: trie.New(),
-		temp: trie.New(),
+		list: NewTrie(),
+		temp: NewTrie(),
 	}
 }

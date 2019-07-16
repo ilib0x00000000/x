@@ -11,6 +11,8 @@ import (
 	"net/http/httputil"
 	"strings"
 	"time"
+
+	"github.com/ilib0x00000000/x/util"
 )
 
 // httpConnected 当本地客户端发起一个 HTTP/HTTPS 请求之后，本地的客户端会给远程的代理发起会话
@@ -78,29 +80,35 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 // NewClientProxy 创建本地的客户端代理
-func NewClientProxy(remote string, useTLS bool) *Proxy {
-	serverName := remote
-
-	i := strings.LastIndex(remote, ":")
+func NewClientProxy(proxy string, useTLS bool, blacklist *util.BlackList) *Proxy {
+	serverName := proxy // 远程代理的 domain
+	i := strings.LastIndex(proxy, ":")
 	if i == -1 {
-		remote = remote + ":443"
+		proxy = proxy + ":443"
 	} else {
-		serverName = remote[:i]
+		serverName = proxy[:i]
 	}
 
 	p := &Proxy{serverName: serverName}
 	p.Dial = func(address string) (conn net.Conn, err error) {
-		// host := address[:strings.LastIndex(address, ":")]
-		// TODO 判断 host 在不在 GFW 黑名单上
-		// 如果 host 在 GFW 的黑名单上，连接远程的代理
-		// 如果不在直连
-		// proxy: remote    dst:address
-		log.Printf("dial %s via %s", address, remote)
 
-		// 直连远程的代理
-		conn, err = net.DialTimeout("tcp", remote, 1*time.Second)
+		host := address[:strings.LastIndex(address, ":")]
+		if blacklist.IsBlacked(host) {
+			goto PROXY
+		}
+
+		conn, err = net.DialTimeout("tcp", address, 1*time.Second)
+		if err == nil {
+			return
+		}
+
+		log.Println("dial remote proxy error: ", err)
+		blacklist.Add(host)
+	PROXY:
+		// log.Printf("dial %s via %s", address, remote)
+		conn, err = net.DialTimeout("tcp", proxy, 1*time.Second)
 		if err != nil {
-			log.Println("dial remote proxy error: ", err)
+			return
 		}
 
 		// 使用 TLS 协议

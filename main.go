@@ -8,6 +8,7 @@ import (
 
 	localProxy "github.com/ilib0x00000000/x/local"
 	remoteProxy "github.com/ilib0x00000000/x/remote"
+	"github.com/ilib0x00000000/x/util"
 	"github.com/mholt/certmagic"
 )
 
@@ -78,7 +79,11 @@ func startLocal() {
 		return
 	}
 
-	handler := localProxy.NewClientProxy(domain, useTLS)
+	// 黑名单设置
+	blacklist := util.NewBlackList()
+	blacklist.LoadGFWList()
+
+	handler := localProxy.NewClientProxy(domain, useTLS, blacklist)
 	err := http.ListenAndServe(listen, handler)
 	if err != nil {
 		panic(err)
