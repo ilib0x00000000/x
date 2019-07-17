@@ -209,16 +209,16 @@ func (t *Trie) HasKeysWithPrefix(key string) bool {
 // Remove 删除
 func (t *Trie) Remove(key string) {
 	var (
-		i    int
-		bs   = []byte(key)
-		node = findNode(t.Root(), []byte(key))
+		i  int
+		bs = []byte(key)
+		nd = findNode(t.Root(), []byte(key))
 	)
 
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
 	t.size--
-	for n := node.Parent(); n != nil; n = n.Parent() {
+	for n := nd.Parent(); n != nil; n = n.Parent() {
 		i++
 		if len(n.Children()) > 1 {
 			b := bs[len(bs)-i]

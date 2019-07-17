@@ -94,10 +94,11 @@ func startLocal() {
 func usage() {
 	fmt.Println("Usage: ")
 	fmt.Println("\t in local")
-	fmt.Println("\t\t go run main.go --local --listem=:8080 --domain=www.your-domain.com --tls=true")
+	fmt.Println("\t\t go run main.go --local --listen=:8080 --domain=www.your-domain.com --tls=true")
 	fmt.Println("\t\t set env http_proxy=127.0.0.1:8080 https_proxy=127.0.0.1:8080")
 	fmt.Println("\t\t Then will make you feel happy cross The Great Fire Wall (゜-゜)つロ~")
-	fmt.Println("\n")
+	fmt.Println("")
+	fmt.Println("")
 	fmt.Println("\t in remote")
 	fmt.Println("\t\t go run main.go --remote --domain=www.your-domain.com --tls=true")
 	fmt.Println("\t\t I'm outside the wall")
